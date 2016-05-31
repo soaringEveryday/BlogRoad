@@ -138,7 +138,6 @@ ConnectionBase.getApiService2()
 
 所以这里是有一个问题的，对于这种嵌套的网络请求，由于接到上端数据流到处理后将结果数据放入下端数据流是一个异步的过程，而conventStudentToCourse这种直接将Student转化为Course是没法做到异步的，因为没有回调方法。那么这种情况，最好还是用flatMap并通过retrofit的方式来获取Observable。要知道，Rxjava的一个精髓就是“异步”。
 
-### map和flatMap
 那么到底map和flatMap有什么区别，或者说什么时候使用map什么时候使用flatMap呢？
 flatMap() 和 map() 有一个相同点：它也是把传入的参数转化之后返回另一个对象。但需要注意，和 map() 不同的是， flatMap() 中返回的是个 Observable 对象，并且这个 Observable 对象并不是被直接发送到了 Subscriber 的回调方法中。
 

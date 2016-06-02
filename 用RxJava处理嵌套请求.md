@@ -178,6 +178,21 @@ Observable.from(jsonFile).flatMap(new Func1<File, Observable<String>>() {
 });
 ```
 
+**map操作符通常也用于处理结构化的服务端响应数据**，比如下列返回的JSON数据就是一段典型的响应数据
+```json
+{
+    "message":"操作成功",
+    "status":1,
+    "data":
+    {
+        "noVisitCount":0,
+        "planCount":0,
+        "visitedCount":0
+    }
+}
+```
+在map的闭包中，我们可以先判断status进行统一的出错或者正确（返回data的内容）处理，一般来说，data的内容都是处理成一个泛型
+
 ### RxJava与Retrofit配合解决嵌套请求
 这里该讨论Retrofit了。可以说Retrofit就是为了RxJava而生的。如果你的项目之前在网络请求框架用的是Volley或者自己封装Http请求和TCP/IP，而现在你看到了Retrofit这个框架后想使用起来，我可以负责任的跟你说，如果你的项目中没有使用RxJava的话，使用Retrofit和Volley是没有区别的！要用Retrofit的话，就最好或者说强烈建议也使用RxJava进行编程。
 

@@ -1,5 +1,3 @@
-## 更便捷的Android多渠道打包方式
-
 >本文先回顾了以往流行的多渠道打包方式，随后引入的mcxiaoke的packer-ng-plugin项目，介绍该项目在实际应用（配合友盟统计）中如何解决更方便的Android多渠道打包问题
 
 * 多渠道打包方案解析 
@@ -12,7 +10,7 @@ android应用市场多种多样，应用宝、小米市场、豌豆荚...为了�
 目前多渠道打包方式大致有：
 1. gradle自带的productFlavor方式，见我之前的[博客](http://www.cnblogs.com/soaringEveryday/p/5368540.html)
 2. apktool重签名重打包
-3. 在apk文件中的META-INF文件夹中写入空文件方式（美团）
+3. 在apk文件中的META-INF文件夹中写入以渠道号命名的空文件方式（美团）
 
 第三种是比较快的方式，据说900多个渠道不到一分钟就能打完，[参考](http://tech.meituan.com/mt-apk-packaging.html)。但是缺点也是有的，你需要维护一个python脚本，为每一种渠道写入一个以渠道名命名的空文件。
 
@@ -49,10 +47,11 @@ WanDouJia
 Baidu
 Qihoo
 GooglePlay
+...
 ```
 就是每一行即一个渠道号
 
-再在你的项目根目录加入一个bat文件（windows），内容写上（即一个命令）
+再在你的项目根目录加入一个bat脚本（windows），比如叫做`build.bat`，内容写上（即一个命令）
 ``` powershell
 gradle -Pmarket=markets.txt clean apkRelease
 ```
@@ -72,12 +71,12 @@ gradle -Pmarket=markets.txt clean apkRelease
 BUILD SUCCESSFUL
 Total time: 1 mins 23.269 secs 
 ```
-同时根据这个输出，他一共生成了8个渠道包，所有的apk输出在了项目根目录的build/archives文件夹中
+根据这个输出，他一共生成了8个渠道包，所有的apk输出在了项目根目录的build/archives文件夹中
 
 packer-ng-plugin也提供了一些自定义配置，比如输入的apk的命名方式，具体参考[插件配置说明](https://github.com/mcxiaoke/packer-ng-plugin#%E6%8F%92%E4%BB%B6%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E%E5%8F%AF%E9%80%89)，同时提供了java和python的命令行脚本，供集成到持续集成环境中，具体参考[命令行打包脚本](https://github.com/mcxiaoke/packer-ng-plugin#%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%89%93%E5%8C%85%E8%84%9A%E6%9C%AC)。
 
 最后需要提的一点就是如何让**友盟统计**知道目前的apk是哪个渠道。首先你需要删除之前的productFlavor或者manifest的占位符的方式的代码，删除AndroidManifest中友盟的渠道Channel的META-Data的配置。
-然后通过在程序入口（Application）的onCreate中加入下列代码：
+然后在app入口（Application）的onCreate中加入下列代码：
 ```java
 final String market = PackerNg.getMarket(this,"defaul_channel);
 AnalyticsConfig.setChannel(market); //AnalyticsConfig是友盟的代码方式设置渠道类
